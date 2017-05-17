@@ -1,0 +1,3 @@
+#!/bin/sh
+cd /srv/http/wiki.pumpingstationone.org/mediawiki
+/usr/bin/php maintenance/dumpBackup.php --full --quiet | xz -9e > /srv/http/wiki.pumpingstationone.org/dumps/ps1wiki-full-`date +%Y%m%d-%s`.xml.xz

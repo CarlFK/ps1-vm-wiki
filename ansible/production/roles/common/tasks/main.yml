@@ -1,0 +1,8 @@
+- name: Add the jessie backports repos
+  apt_repository:
+    repo: deb http://ftp.debian.org/debian jessie-backports main
+    state: present
+- name: Update repositories cache and install "git" package
+  apt:
+    name: git
+    update_cache: yes

@@ -1,0 +1,13 @@
+---
+- name: Installs mediawiki, mysql and nginx on the machine
+  hosts: wiki
+  remote_user: root
+
+  roles:
+    - common
+    - mysql
+    - nginx
+    - php-fpm
+    - search
+    - mediawiki
+    - backup

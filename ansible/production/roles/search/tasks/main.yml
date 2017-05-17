@@ -1,0 +1,35 @@
+- name: Add the ES key
+  apt_key:
+    url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    state: present
+- name: Add HTTPS ability for APT (and this is not the default you fools?)
+  apt:
+    name: apt-transport-https
+- name: Add the ES5 repo
+  apt_repository:
+    repo: deb https://artifacts.elastic.co/packages/5.x/apt stable main
+    state: present
+- name: Install that freaking Java 8
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+    default_release: jessie-backports
+  with_items:
+    - "ca-certificates-java"
+    - "openjdk-8-jre-headless"
+- name: Install that freaking ES
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+  with_items:
+    - "elasticsearch"
+- name: Remove old java crap
+  apt:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - "openjdk-7-jre"
+    - "openjdk-7-jre-headless"
+#- name: Add the elasticsearch config file
+#  template: src=elasticsearch.yml.j2 dest=/etc/elasticsearch/elasticsearch.yml
+#  notify: restart elasticsearch

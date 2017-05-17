@@ -1,0 +1,63 @@
+- name: Install required packages
+  apt: name={{ item }}
+  with_items:
+    - imagemagick
+    - lua5.1
+    - elasticsearch
+- name: Mediawiki Git Release 1.28
+  git:
+    repo: https://gerrit.wikimedia.org/r/p/mediawiki/core.git
+    dest: "{{ wiki_prefix }}"
+    version: master
+    force: yes
+- name: Mediawiki vendor libs 1.28
+  git:
+    repo: https://gerrit.wikimedia.org/r/p/mediawiki/vendor.git
+    dest: "{{ wiki_prefix }}/vendor"
+    version: master
+- name: Extensions
+  git:
+    repo: https://gerrit.wikimedia.org/r/p/mediawiki/extensions/{{ item }}.git
+    dest: "{{ wiki_prefix }}/extensions/{{ item }}"
+    version: master
+  with_items:
+    - LdapAuthentication
+    - Scribunto
+    - TemplateSandbox
+    - SubPageList3
+    - MobileFrontend
+    - googleAnalytics
+    - Vector
+    - Flow
+    - ParserFunctions
+- name: Extensions with experimental code
+  git:
+    repo: https://gerrit.wikimedia.org/r/p/mediawiki/extensions/{{ item }}.git
+    dest: "{{ wiki_prefix }}/extensions/{{ item }}"
+    version: master
+  with_items:
+    - Elastica
+    - CirrusSearch
+- name: Extension RegexParserFunctions
+  git:
+    repo: https://github.com/mediawiki4intranet/RegexParserFunctions.git
+    dest: "{{ wiki_prefix }}/extensions/RegexParserFunctions"
+- name: SMW Download/Install
+  unarchive:
+    src: "{{ SMW_URL }}"
+    dest: "{{ wiki_prefix }}/extensions/"
+    remote_src: True
+- name: Using the default Skin
+  git:
+    repo: https://phabricator.wikimedia.org/diffusion/SVEC/Vector
+    dest: "{{ wiki_prefix }}/skins/Vector"
+- name: Generating the settings file
+  template: src=LocalSettings.php.j2 dest="{{ wiki_prefix }}/LocalSettings.php"
+#- name: Add the Cron based indexer
+#  template: src=cron_indexer.j2 dest="/etc/cron.hourly/wiki_incremental"
+#- name: Add the Cron based main indexer
+#  template: src=cron_main_indexer.j2 dest="/etc/cron.daily/wiki_main_incremental"
+- name: Create the space for the mw dumps
+  file: path="{{ wiki_dumps }}" state=directory
+- name: Add the Cron based dumpbackup
+  template: src=cron_dumpbackup.j2 dest="/etc/cron.daily/mw_dumpbackup"

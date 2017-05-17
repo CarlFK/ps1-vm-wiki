@@ -1,0 +1,320 @@
+<?php
+
+  # Uncomment during DB backup or other read-only maintenance
+  {% if read_only is defined%}
+ $wgReadOnly = "{{ read_only }}";
+{% endif %}
+
+# If you customize your file layout, set $IP to the directory that contains
+# the other MediaWiki files. It will be used as a base to locate files.
+if( defined( 'MW_INSTALL_PATH' ) ) {
+	$IP = MW_INSTALL_PATH;
+} else {
+#	$IP = dirname( __FILE__ );
+	$IP = "{{ wiki_prefix }}";
+}
+
+$path = array( $IP, "$IP/includes", "$IP/languages" );
+set_include_path( implode( PATH_SEPARATOR, $path ) . PATH_SEPARATOR . get_include_path() );
+
+require_once( "$IP/includes/DefaultSettings.php" );
+
+# If PHP's memory limit is very low, some operations may fail.
+# ini_set( 'memory_limit', '20M' );
+
+if ( $wgCommandLineMode ) {
+	if ( isset( $_SERVER ) && array_key_exists( 'REQUEST_METHOD', $_SERVER ) ) {
+		die( "This script must be run from the command line\n" );
+	}
+}
+## Uncomment this to disable output compression
+# $wgDisableOutputCompression = true;
+
+$wgSitename         = "{{ wiki_name }}";
+#$wgScriptPath = "/";         # Path to the actual files. This should already be there
+#$wgArticlePath = "/$1";  # Virtual path. This directory MUST be different from the one used in $wgScriptPath
+#$wgUsePathInfo = true;        # Enable use of pretty URLs
+
+## The URL base path to the directory containing the wiki;
+## defaults for all runtime URL paths are based off of this.
+## For more information on customizing the URLs please see:
+## http://www.mediawiki.org/wiki/Manual:Short_URL
+$wgScriptPath       = "";
+$wgScriptExtension  = ".php";
+
+## UPO means: this is also a user preference option
+
+$wgEnableEmail      = true;
+$wgEnableUserEmail  = false; # UPO
+
+$wgEmergencyContact = "{{ emergency_contact }}";
+$wgPasswordSender = "{{ password_sender }}";
+
+$wgEnotifUserTalk = true; # UPO
+$wgEnotifWatchlist = true; # UPO
+$wgEmailAuthentication = false;
+
+## Database settings
+$wgDBtype           = "mysql";
+$wgDBserver         = "{{ mysql_server }}";
+$wgDBname           = "{{ mysql_dbname }}";
+$wgDBuser           = "{{ mysql_dbuser }}";
+$wgDBpassword       = "{{ mysql_password }}";
+
+# MySQL specific settings
+$wgDBprefix         = "";
+
+# MySQL table options to use during installation or update
+$wgDBTableOptions   = "ENGINE=InnoDB, DEFAULT CHARSET=binary";
+
+# Experimental charset support for MySQL 4.1/5.0.
+$wgDBmysql5 = true;
+
+## Shared memory settings
+$wgMainCacheType = CACHE_ACCEL;
+$wgMemCachedServers = array();
+
+## Time zone
+$wgLocaltimezone = "{{ timezone }}";
+
+## To enable image uploads, make sure the 'images' directory
+## is writable, then set this to true:
+$wgEnableUploads       = true;
+$wgUseImageMagick = true;
+$wgImageMagickConvertCommand = "/usr/bin/convert";
+$wgThumbnailEpoch = max( $wgThumbnailEpoch, gmdate( 'YmdHis', @filemtime( __FILE__ ) ) );
+#$wgAllowTitlesInSVG = true;
+$wgSVGConverterPath = "/usr/bin";
+$wgDebugLogFile = "{{ mw_log_file }}";
+error_reporting( -1 );
+ini_set( 'display_startup_errors', 1 );
+ini_set( 'display_errors', 1 );
+#putenv("MAGICK_THREAD_LIMIT=1"); // mediawiki limits threads of shell processes
+$wgMaxShellMemory = 1024000; // More memory for svg converting
+
+
+## If you use ImageMagick (or any other shell command) on a
+## Linux server, this will need to be set to the name of an
+## available UTF-8 locale
+$wgShellLocale = "en_US.utf8";
+
+## If you want to use image uploads under safe mode,
+## create the directories images/archive, images/thumb and
+## images/temp, and make them all writable. Then uncomment
+## this, if it's not already uncommented:
+# $wgHashedUploadDirectory = false;
+
+## If you have the appropriate support software installed
+## you can enable inline LaTeX equations:
+$wgUseTeX           = false;
+
+$wgLocalInterwiki   = strtolower( $wgSitename );
+
+$wgLanguageCode = "en";
+
+$wgSecretKey = "{{ mw_secret_key }}";
+
+## Default skin: you can change the default skin. Use the internal symbolic
+## names, ie 'standard', 'nostalgia', 'cologneblue', 'monobook':
+## $wgDefaultSkin = 'monobook';
+$wgDefaultSkin = 'Vector';
+
+## For attaching licensing metadata to pages, and displaying an
+## appropriate copyright notice / icon. GNU Free Documentation
+## License and Creative Commons licenses are supported so far.
+# $wgEnableCreativeCommonsRdf = true;
+$wgRightsPage = ""; # Set to the title of a wiki page that describes your license/copyright
+$wgRightsUrl = "";
+$wgRightsText = "";
+$wgRightsIcon = "";
+# $wgRightsCode = ""; # Not yet used
+
+$wgDiff3 = "/usr/bin/diff3";
+
+# When you make changes to this configuration file, this will make
+# sure that cached pages are cleared.
+$wgCacheEpoch = max( $wgCacheEpoch, gmdate( 'YmdHis', @filemtime( __FILE__ ) ) );
+
+# Anti-Spam measures -Josh
+
+# Disable anonymous editing
+$wgGroupPermissions['*']['edit'] = false;
+ 
+# Prevent new user registrations except by sysops
+$wgGroupPermissions['*']['createaccount'] = false;
+
+# Use SSL site
+$wgServer = "https://{{ server_name }}";
+
+# Use HTTP_X_FORWARDED_FOR to determine IP address
+$wgUseSquid = true;
+
+# MediaWiki Edits by Nathan Jan 30, 2011
+wfLoadExtension( 'ParserFunctions' );
+$wgAllowExternalImages = true;
+$wgThumbnailScriptPath = "/thumb.php";
+$wgSharedThumbnailScriptPath = "/thumb.php";
+$wgThumbLimits = array(120,150,180,200,250,300);
+$wgFileExtensions = array_merge($wgFileExtensions,array('svg','ai','skp','dfg','dfx','pdf','odf','doc','docx','ini','csv','zip', '3dm'));
+$wgRawHtml = true;
+$wgScriptPath = "";
+$wgArticlePath = "/$1";
+
+# MediaWiki Edit by Dan Delaney (loclhst) May 5, 2012 for image uploads
+$wgHashedUploadDirectory = false;
+$wgUploadDirectory = "$IP/../images";
+$wgUploadPath = "$wgScriptPath/images";
+
+$wgLogo = "{{ logo }}";
+$wgFavicon = "{{ favicon }}";
+
+# AD/LDAP settings
+require_once( "$IP/extensions/LdapAuthentication/LdapAuthentication.php" );
+require_once 'includes/AuthPlugin.php';
+$wgAuth = new LdapAuthenticationPlugin();
+$wgLDAPDomainNames = array( '{{ LDAPDomain }}' );
+$wgLDAPServerNames = array( '{{ LDAPDomain }}' => '{{ LDAPHost }}' );
+$wgLDAPSearchSrings = array( '{{ LDAPDomain }}' => 'USER-NAME@{{ LDAPDomain }}' );
+$wgLDAPEncryptionType = array( '{{ LDAPDomain }}' => 'clear' );
+$wgLDAPUseLocal = false;
+
+# AD/LDAP Proxy Agent 
+$wgLDAPProxyAgent = array( '{{ LDAPDomain }}' => '{{ LDAPProxyAgent }}' );
+$wgLDAPProxyAgentPassword = array( '{{ LDAPDomain }}' => '{{ LDAPProxyAgentPassword }}');
+$wgMinimalPasswordLength = 1;
+$wgLDAPBaseDNs = array( '{{ LDAPDomain }}' => '{{ LDAPBaseDN }}' );
+$wgLDAPSearchAttributes = array( '{{ LDAPDomain }}' => '{{ LDAPSearchAttributes }}' );
+$wgLDAPAuthAttribute = array( '{{ LDAPDomain }}' => '{{ LDAPAuthAttribute }}' );
+$wgLDAPRetrivePrefs = array( "{{ LDAPDomain }}" => true );
+$wgLDAPDebug = 3;
+$wgDebugLogGroups['ldap'] = '$IP/../cache/ldap.log';
+#$wgDebugLogGroups['ldap'] = '/var/log/ldap.log';
+$wgShowExceptionDetails = true;
+
+# Needed to autocreate accounts
+$wgGroupPermissions['*']['autocreateaccount'] = true;
+
+# Groups
+$wgLDAPGroupUseFullDN = array( '{{ LDAPDomain }}' => true );
+$wgLDAPLowerCaseUsername = array( '{{ LDAPDomain }}' => false );
+#$wgLDAPGroupUseRetrievedUsername = array( '{{ LDAPDomain }}' => false);
+$wgLDAPGroupObjectclass = array( '{{ LDAPDomain }}' => 'group' );
+$wgLDAPGroupAttribute = array( '{{ LDAPDomain }}' => 'member' );
+$wgLDAPGroupNameAttribute = array( '{{ LDAPDomain }}' => 'cn' );
+$wgLDAPGroupsUseMemberOf = array( '{{ LDAPDomain }}' => true ); # This probably negates several other options
+$wgLDAPUseLDAPGroups = array( '{{ LDAPDomain }}' => true );
+$wgLDAPGroupSearchNestedGroups = array( '{{ LDAPDomain }}' => true );
+$wgLDAPActiveDirectory = array( '{{ LDAPDomain }}' => true );
+$wgGroupPermissions['Domain Admins'] = $wgGroupPermissions['sysop'];
+$wgGroupPermissions['WikiBots'] = $wgGroupPermissions['bot'];
+
+
+# File Caching
+$wgUseFileCache = true; /* default: false */ 
+$wgFileCacheDirectory = "$IP/../cache";
+$wgShowIPinHeader = false; 
+$wgUseGzip = true;
+
+$wgUpgradeKey = '{{ mw_upgrade_key }}';
+
+# one of the templates required this
+require_once "$IP/extensions/Scribunto/Scribunto.php";
+$wgScribuntoDefaultEngine = 'luastandalone';
+$wgScribuntoEngineConf['luastandalone']['luaPath'] = '/usr/bin/lua5.1';
+
+#search enhancement
+#$wgSearchType = 'SphinxMWSearch';
+#$wgSphinxSuggestMode = 'enchant';
+
+#require_once "$IP/extensions/MWSearch/MWSearch.php";
+#$wgSearchType = 'LuceneSearch';
+#$wgLuceneHost = '{{ LuceneServer }}'; // IP address of the server
+#$wgLucenePort = {{ LucenePort }};
+#$wgLuceneSearchVersion = 2.1; // comment this out if you are using the old version 2.0
+
+
+# Allow template change testing
+require_once "$IP/extensions/TemplateSandbox/TemplateSandbox.php";
+
+# Default User Options
+$wgDefaultUserOptions['watchdefault'] = 1;
+$wgShowExceptionDetails = True;
+
+#Easy Subpages
+require_once("$IP/extensions/SubPageList3/SubPageList3.php");
+
+#Mobile stuff
+require_once("$IP/extensions/MobileFrontend/MobileFrontend.php");
+
+#analytics
+#require_once("$IP/../extensions/piwik-mediawiki-extension/Piwik.php");
+#$wgPiwikURL = "wiki.pumpingstationone.org/piwik";
+#$wgPiwikIDSite = "1";
+
+
+#fix for File(/usr/bin/php) is not within the allowed path(s):
+$wgPhpCli = 'php';
+
+
+# Visual Editor
+# 2014-08-26 The performance of the Visual Editor is not satisfactory. --hef.
+# 2014-11-29 Trying again --hef.
+# 2014-11-30 Still slow, disabling --hef.
+
+#require_once("$IP/extensions/VisualEditor/VisualEditor.php");
+#$wgDefaultUserOptions['visualeditor-enable'] = 1;
+#$wgVisualEditorNamespaces = array( NS_TALK, NS_USER, NS_USER_TALK, );
+
+#Google Analytics
+require_once("$IP/extensions/googleAnalytics/googleAnalytics.php");
+$wgGoogleAnalyticsAccount = "{{ GoogleAnalyticsCode }}"; 
+
+$wgSMTP = array(
+# 'host'     => "mail.ad.pumpingstationone.org", // could also be an IP address. Where the SMTP server is located
+ 'host'     => "{{ EmailHost }}", // could also be an IP address. Where the SMTP server is located
+ 'IDHost'   => "{{ EmailID }}",      // Generally this will be the domain name of your website (aka mywiki.org)
+ 'port'     => 25,                 // Port to use when connecting to the SMTP server
+ 'auth'     => false,              // Should we use SMTP authentication (true or false)
+# 'username' => "my_user_name",     // Username to use for SMTP authentication (if being used)
+# 'password' => "my_password"       // Password to use for SMTP authentication (if being used)
+);
+
+
+# Vector Skin
+require_once("$IP/skins/Vector/Vector.php");
+#wfLoadSkin( 'Vector' );
+
+# Semantic web
+require_once "$IP/extensions/SemanticMediaWiki/SemanticMediaWiki.php";
+enableSemantics( 'wiki.pumpingstationone.org' );
+# Not Yet
+$wgIncludejQueryMigrate = true;
+
+
+# Allow CSS/JS hacks
+$wgAllowUserJs = true;
+$wgUseSiteJs = true;
+$wgAllowUserCss = true;
+$wgUseSiteCss = true;
+
+# Geishi
+#require_once "$IP/extensions/SyntaxHighlight_GeSHi/SyntaxHighlight_GeSHi.php";
+#wfLoadExtension( 'SyntaxHighlight_GeSHi' );
+
+# CirrusSearch
+require_once "$IP/extensions/Elastica/Elastica.php";
+require_once "$IP/extensions/CirrusSearch/CirrusSearch.php";
+#$wgDisableSearchUpdate = true;
+$wgSearchType = 'CirrusSearch';
+$wgCirrusSearchServers = array( '{{ CirrusHost }}' );
+
+# Flow
+require_once "$IP/extensions/Flow/Flow.php";
+$wgGroupPermissions['Domain Admins']['flow-create-board'] = true;
+
+# Regex Extension
+require_once("$IP/extensions/RegexParserFunctions/RegexParserFunctions.php");
+
+
+# Add our own reset route for passwords
+$wgPasswordResetRoutes = false;

@@ -1,0 +1,7 @@
+- name: Installs mariadb
+  apt: name={{ item }}
+  with_items:
+    - mariadb-client
+    - mariadb-server
+- name: Start enable mariadb service
+  systemd: name=mysql state=started enabled=yes masked=no

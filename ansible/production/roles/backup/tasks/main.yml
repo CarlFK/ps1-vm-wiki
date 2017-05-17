@@ -1,0 +1,11 @@
+- name: Install duplicity
+  apt:
+    name: duplicity
+- name: Cronjob for duplicity
+  template: src=cron_duplicity.j2 dest="/etc/cron.daily/s3_backup"
+- name: Install automysqlbackup
+  apt:
+    name: automysqlbackup
+- name: Settings for automysqlbackup duplicity
+  template: src=automysqlbackup.conf.j2 dest="/etc/automysqlbackup/automysqlbackup.conf"
+

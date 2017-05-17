@@ -1,0 +1,6 @@
+*~
+**/host_vars/*
+!**/host_vars/*.gpg
+site.retry
+**/*.img
+certificates

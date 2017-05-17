@@ -1,0 +1,22 @@
+- [X] MediaWiki
+  - [X] Main
+  - [X] Extensions
+  - [X] Config
+  - [X] Copy static
+  - [X] Copy images
+  - [X] Copy certs
+- [X] NGINX
+  - [X] PHP FPM
+    - [X] PHP config
+    - [X] fastcgi.conf
+  - [X] Config
+- [X] MySQL
+- [X] Elasticsearch
+- [-] LDAP
+  - [ ] Auth
+  - [X] Reactivate TLS
+- [ ] Backup 
+  - [ ] Duplicity
+  - [ ] Automysqlbackup
+- [X] DHCP
+- [X] NGINX Frontend www1
