@@ -312,9 +312,12 @@ $wgCirrusSearchServers = array( '{{ CirrusHost }}' );
 require_once "$IP/extensions/Flow/Flow.php";
 $wgGroupPermissions['Domain Admins']['flow-create-board'] = true;
 
-# Regex Extension
-require_once("$IP/extensions/RegexParserFunctions/RegexParserFunctions.php");
-
-
 # Add our own reset route for passwords
 $wgPasswordResetRoutes = false;
+
+
+# Extensions
+
+require_once("$IP/extensions/RegexParserFunctions/RegexParserFunctions.php");
+# Adding the Loops Extension (https://www.mediawiki.org/wiki/Extension:Loops)
+require_once("$IP/extensions/Loops/Loops.php");
