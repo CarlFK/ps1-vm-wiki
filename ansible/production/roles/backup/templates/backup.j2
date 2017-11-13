@@ -1,0 +1,12 @@
+#!/bin/bash
+
+echo -e "[client]\npassword=$(grep pass < /etc/mysql/debian.cnf  | cut -d \  -f 3 | head -n 1)\n" > ~/.my.cnf
+
+DAY=$(date +%d)
+mkdir -p /root/backups
+rm /root/backups/last-backup-on*
+mysqldump -S /var/run/mysqld/mysqld.sock -u debian-sys-maint --all-databases | gzip - > /root/backups/mysql.db
+touch /root/backups/last-backup-on-$(date +%Y-%m-%d)
+journalctl --since=-168h | gzip - > /root/backups/journal_of_week.log.gz
+s3cmd put --recursive /root/backups s3://ps1-machine-backup/wiki-backup/${DAY}/
+s3cmd sync --no-encrypt -r /srv s3://ps1-machine-backup/wiki-backup/files

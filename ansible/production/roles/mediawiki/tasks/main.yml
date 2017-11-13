@@ -4,22 +4,29 @@
     - imagemagick
     - lua5.1
     - elasticsearch
-- name: Mediawiki Git Release 1.28
+- name: Mediawiki Git Release 1.30
   git:
     repo: https://gerrit.wikimedia.org/r/p/mediawiki/core.git
     dest: "{{ wiki_prefix }}"
-    version: master
+    version: REL1_30
     force: yes
-- name: Mediawiki vendor libs 1.28
+- name: Mediawiki vendor libs 1.30
   git:
     repo: https://gerrit.wikimedia.org/r/p/mediawiki/vendor.git
     dest: "{{ wiki_prefix }}/vendor"
-    version: master
-- name: Extensions
+    version: REL1_30
+- name: Extensions ver master
   git:
     repo: https://gerrit.wikimedia.org/r/p/mediawiki/extensions/{{ item }}.git
     dest: "{{ wiki_prefix }}/extensions/{{ item }}"
     version: master
+  with_items:
+    - Vector
+- name: Extensions ver 1.30
+  git:
+    repo: https://gerrit.wikimedia.org/r/p/mediawiki/extensions/{{ item }}.git
+    dest: "{{ wiki_prefix }}/extensions/{{ item }}"
+    version: REL1_30
   with_items:
     - LdapAuthentication
     - Scribunto
@@ -27,7 +34,6 @@
     - SubPageList3
     - MobileFrontend
     - googleAnalytics
-    - Vector
     - Flow
     - ParserFunctions
     - Loops

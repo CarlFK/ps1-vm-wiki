@@ -1,11 +1,34 @@
-- name: Install duplicity
+- name: Install s3cmd
   apt:
-    name: duplicity
-- name: Cronjob for duplicity
-  template: src=cron_duplicity.j2 dest="/etc/cron.daily/s3_backup"
-- name: Install automysqlbackup
-  apt:
-    name: automysqlbackup
-- name: Settings for automysqlbackup duplicity
-  template: src=automysqlbackup.conf.j2 dest="/etc/automysqlbackup/automysqlbackup.conf"
-
+    name: s3cmd
+- name: Create the backup service
+  template:
+    src: backup.service.j2
+    dest: /etc/systemd/system/backup.service
+    mode: 0644
+  notify: reload systemd
+- name: Create the wiki daily backup timer
+  template:
+    src: backup-daily.timer.j2
+    dest: /etc/systemd/system/backup-daily.timer
+    mode: 0644
+  notify: reload systemd
+- name: Enable the wiki daily timer
+  systemd:
+    name: backup-daily.timer
+    state: started
+    enabled: True
+  notify: reload systemd
+- name: Copy S3 configuration
+  template:
+    src: s3cfg.j2
+    dest: /root/.s3cfg
+- name: Copy the backup script
+  template:
+    src: s3cfg.j2
+    dest: /root/.s3cfg
+- name: Install the backup script
+  template:
+    src: backup.j2
+    dest: /root/backup.sh
+    mode: 0700

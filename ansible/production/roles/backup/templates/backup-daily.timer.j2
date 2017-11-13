@@ -1,0 +1,10 @@
+[Unit]
+Description=Perform daily backup
+
+[Timer]
+OnCalendar=daily
+RandomizedDelaySec=3600
+Unit=backup.service
+
+[Install]
+WantedBy=timers.target
